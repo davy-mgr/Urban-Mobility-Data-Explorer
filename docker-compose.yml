@@ -1,0 +1,18 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    volumes:
+      # Data persistence
+      - ./backend/data:/app/data
+      # For development
+      - ./backend/src:/app/src
+      # Raw data
+      - ./backend/src/data/raw:/app/src/data/raw
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - DB_PATH=/app/data/trips.db
+      - DATA_RAW_PATH=/app/src/data/raw/train.csv
+    restart: unless-stopped

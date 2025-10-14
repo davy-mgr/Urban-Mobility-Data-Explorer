@@ -1,3 +1,17 @@
+# Data files
 /backend/src/data/raw/
 /backend/src/data/processed/
 /backend/src/data/logs/
+/backend/data/trips.db
+/backend/data/trips.db-shm
+/backend/data/trips.db-wal
+
+# Environment variables
+/backend/.env
+.env
+
+# Dependencies
+node_modules/
+# OS files
+.DS_Store
+Thumbs.db
