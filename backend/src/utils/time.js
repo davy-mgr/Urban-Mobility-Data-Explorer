@@ -1,4 +1,7 @@
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc.js";
+
+dayjs.extend(utc);
 
 export function normalizeTimestamp(ts) {
 	  const date = dayjs(ts);
