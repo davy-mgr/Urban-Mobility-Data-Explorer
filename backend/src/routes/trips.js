@@ -73,6 +73,7 @@ router.get("/trips", (req, res, next) => {
 			maxDistance: req.query.maxDistance,
 			pickupHour: req.query.pickupHour,
 			minPassengers: req.query.minPassengers,
+			passengerCount: req.query.passengerCount,
 			startDate: req.query.startDate,
 			endDate: req.query.endDate,
 		};
@@ -130,6 +131,7 @@ router.get("/stats", (req, res, next) => {
 			maxDistance: req.query.maxDistance,
 			pickupHour: req.query.pickupHour,
 			minPassengers: req.query.minPassengers,
+			passengerCount: req.query.passengerCount,
 			startDate: req.query.startDate,
 			endDate: req.query.endDate,
 		};
@@ -138,11 +140,119 @@ router.get("/stats", (req, res, next) => {
 		Object.keys(filters).forEach((key) => filters[key] === undefined && delete filters[key]);
 
 		const stats = Trip.getStats(filters);
-		const hourlyDistribution = Trip.getHourlyDistribution();
+		const hourlyDistribution = Trip.getHourlyDistribution(filters);
 
 		res.json({
 			stats,
 			hourlyDistribution,
+			filters,
+		});
+	} catch (error) {
+		next(error);
+	}
+});
+
+/**
+ * GET /api/stats/duration-distribution
+ * Get trip duration histogram
+ * Query params: bucketSize (default: 300 seconds = 5 minutes)
+ * Supports same filters as /api/trips
+ */
+router.get("/stats/duration-distribution", (req, res, next) => {
+	try {
+		const filters = {
+			minDuration: req.query.minDuration,
+			maxDuration: req.query.maxDuration,
+			minDistance: req.query.minDistance,
+			maxDistance: req.query.maxDistance,
+			pickupHour: req.query.pickupHour,
+			minPassengers: req.query.minPassengers,
+			passengerCount: req.query.passengerCount,
+			startDate: req.query.startDate,
+			endDate: req.query.endDate,
+		};
+
+		// Remove undefined filters
+		Object.keys(filters).forEach((key) => filters[key] === undefined && delete filters[key]);
+
+		const bucketSize = parseInt(req.query.bucketSize) || 300;
+		const distribution = Trip.getDurationDistribution(filters, bucketSize);
+
+		res.json({
+			distribution,
+			bucketSize,
+			filters,
+		});
+	} catch (error) {
+		next(error);
+	}
+});
+
+/**
+ * GET /api/stats/distance-distribution
+ * Get trip distance histogram
+ * Query params: bucketSize (default: 2 km)
+ * Supports same filters as /api/trips
+ */
+router.get("/stats/distance-distribution", (req, res, next) => {
+	try {
+		const filters = {
+			minDuration: req.query.minDuration,
+			maxDuration: req.query.maxDuration,
+			minDistance: req.query.minDistance,
+			maxDistance: req.query.maxDistance,
+			pickupHour: req.query.pickupHour,
+			minPassengers: req.query.minPassengers,
+			passengerCount: req.query.passengerCount,
+			startDate: req.query.startDate,
+			endDate: req.query.endDate,
+		};
+
+		// Remove undefined filters
+		Object.keys(filters).forEach((key) => filters[key] === undefined && delete filters[key]);
+
+		const bucketSize = parseFloat(req.query.bucketSize) || 2;
+		const distribution = Trip.getDistanceDistribution(filters, bucketSize);
+
+		res.json({
+			distribution,
+			bucketSize,
+			filters,
+		});
+	} catch (error) {
+		next(error);
+	}
+});
+
+/**
+ * GET /api/stats/speed-distribution
+ * Get average speed histogram
+ * Query params: bucketSize (default: 5 km/h)
+ * Supports same filters as /api/trips
+ */
+router.get("/stats/speed-distribution", (req, res, next) => {
+	try {
+		const filters = {
+			minDuration: req.query.minDuration,
+			maxDuration: req.query.maxDuration,
+			minDistance: req.query.minDistance,
+			maxDistance: req.query.maxDistance,
+			pickupHour: req.query.pickupHour,
+			minPassengers: req.query.minPassengers,
+			passengerCount: req.query.passengerCount,
+			startDate: req.query.startDate,
+			endDate: req.query.endDate,
+		};
+
+		// Remove undefined filters
+		Object.keys(filters).forEach((key) => filters[key] === undefined && delete filters[key]);
+
+		const bucketSize = parseFloat(req.query.bucketSize) || 5;
+		const distribution = Trip.getSpeedDistribution(filters, bucketSize);
+
+		res.json({
+			distribution,
+			bucketSize,
 			filters,
 		});
 	} catch (error) {
