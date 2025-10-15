@@ -37,6 +37,10 @@ function buildWhereClause(filters) {
 		conditions.push("passenger_count >= ?");
 		params.push(parseInt(filters.minPassengers));
 	}
+	if (filters.passengerCount) {
+		conditions.push("passenger_count = ?");
+		params.push(parseInt(filters.passengerCount));
+	}
 	if (filters.startDate) {
 		conditions.push("pickup_datetime >= ?");
 		params.push(filters.startDate);
@@ -142,17 +146,103 @@ export function getStats(filters = {}) {
 
 /**
  * Get trip distribution by hour
+ * @param {object} filters - Filter parameters
  * @returns {array} Array of {pickup_hour, count}
  */
-export function getHourlyDistribution() {
+export function getHourlyDistribution(filters = {}) {
 	const db = getDatabase();
-	const stmt = db.prepare(`
+	const { where, params } = buildWhereClause(filters);
+
+	const query = `
 		SELECT pickup_hour, COUNT(*) as count
 		FROM trips
+		${where}
 		GROUP BY pickup_hour
 		ORDER BY pickup_hour
-	`);
-	return stmt.all();
+	`;
+
+	const stmt = db.prepare(query);
+	return stmt.all(...params);
+}
+
+/**
+ * Get trip duration distribution (histogram)
+ * @param {object} filters - Filter parameters
+ * @param {number} bucketSize - Bucket size in seconds (default: 300 = 5 minutes)
+ * @returns {array} Array of {bucket, count, bucket_min}
+ */
+export function getDurationDistribution(filters = {}, bucketSize = 300) {
+	const db = getDatabase();
+	const { where, params } = buildWhereClause(filters);
+
+	const query = `
+		SELECT
+			(CAST(trip_duration / ? AS INTEGER) * ?) as bucket,
+			COUNT(*) as count,
+			(CAST(trip_duration / ? AS INTEGER) * ?) as bucket_min
+		FROM trips
+		${where}
+		GROUP BY bucket
+		ORDER BY bucket
+	`;
+
+	const stmt = db.prepare(query);
+	return stmt.all(bucketSize, bucketSize, bucketSize, bucketSize, ...params);
+}
+
+/**
+ * Get trip distance distribution (histogram)
+ * @param {object} filters - Filter parameters
+ * @param {number} bucketSize - Bucket size in km (default: 2)
+ * @returns {array} Array of {bucket, count, bucket_min}
+ */
+export function getDistanceDistribution(filters = {}, bucketSize = 2) {
+	const db = getDatabase();
+	const { where, params } = buildWhereClause(filters);
+
+	const query = `
+		SELECT
+			(CAST(trip_distance_km / ? AS INTEGER) * ?) as bucket,
+			COUNT(*) as count,
+			(CAST(trip_distance_km / ? AS INTEGER) * ?) as bucket_min
+		FROM trips
+		${where}
+		GROUP BY bucket
+		ORDER BY bucket
+	`;
+
+	const stmt = db.prepare(query);
+	return stmt.all(bucketSize, bucketSize, bucketSize, bucketSize, ...params);
+}
+
+/**
+ * Get average speed distribution (histogram)
+ * @param {object} filters - Filter parameters
+ * @param {number} bucketSize - Bucket size in km/h (default: 5)
+ * @returns {array} Array of {bucket, count, bucket_min}
+ */
+export function getSpeedDistribution(filters = {}, bucketSize = 5) {
+	const db = getDatabase();
+	const { where, params } = buildWhereClause(filters);
+
+	// Add WHERE clause for non-null speeds or append to existing WHERE
+	const whereClause = where
+		? `${where} AND avg_speed_kph IS NOT NULL`
+		: 'WHERE avg_speed_kph IS NOT NULL';
+
+	const query = `
+		SELECT
+			(CAST(avg_speed_kph / ? AS INTEGER) * ?) as bucket,
+			COUNT(*) as count,
+			(CAST(avg_speed_kph / ? AS INTEGER) * ?) as bucket_min
+		FROM trips
+		${whereClause}
+		GROUP BY bucket
+		ORDER BY bucket
+	`;
+
+	const stmt = db.prepare(query);
+	return stmt.all(bucketSize, bucketSize, bucketSize, bucketSize, ...params);
 }
 
 /**
@@ -172,5 +262,8 @@ export default {
 	count,
 	getStats,
 	getHourlyDistribution,
+	getDurationDistribution,
+	getDistanceDistribution,
+	getSpeedDistribution,
 	deleteAll,
 };
