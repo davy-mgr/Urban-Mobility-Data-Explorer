@@ -1,13 +1,139 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Urban Mobility Data Explorer</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+	<head>
+		  <meta charset="utf-8" />
+		    <meta name="viewport" content="width=device-width,initial-scale=1" />
+		      <title>UrbanMobility Dashboard</title>
+
+		        <!-- Chart.js CDN -->
+			  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+			    <!-- Simple icon font -->
+			      <link href="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.28.0/feather.min.css" rel="stylesheet">
+
+			        <link rel="stylesheet" href="styles.css" />
+	</head>
+	<body>
+		  <header class="topbar">
+			      <div class="brand">UrbanMobility</div>
+			          <nav class="nav">
+					        <button id="refreshBtn" class="btn">Refresh</button>
+						    </nav>
+						      </header>
+
+						        <main class="container">
+								    <section class="controls card">
+									          <h3>Filters</h3>
+										        <div class="filters">
+												        <label>
+														          Start date
+															            <input type="date" id="startDate" />
+																            </label>
+																	            <label>
+																			              End date
+																				                <input type="date" id="endDate" />
+																						        </label>
+																							        <label>
+																									          Hour
+																										            <select id="hourFilter">
+																												                <option value="">All</option>
+																														            <!-- JS will fill 0-23 -->
+																															              </select>
+																																              </label>
+																																	              <label>
+																																			                Min distance (km)
+																																					          <input type="number" id="minDistance" step="0.1" placeholder="0" />
+																																						          </label>
+																																							          <label>
+																																									            Max distance (km)
+																																										              <input type="number" id="maxDistance" step="0.1" placeholder="100" />
+																																											              </label>
+																																												              <label>
+																																														                Min fare
+																																																          <input type="number" id="minFare" step="0.1" placeholder="0" />
+																																																	          </label>
+																																																		          <label>
+																																																				            Max fare
+																																																					              <input type="number" id="maxFare" step="0.1" placeholder="200" />
+																																																						              </label>
+																																																							            </div>
+
+																																																								          <div class="controls-actions">
+																																																										          <button id="applyFilters" class="btn primary">Apply</button>
+																																																											          <button id="resetFilters" class="btn">Reset</button>
+																																																												          <label class="switch">
+																																																														            <input type="checkbox" id="mockToggle" />
+																																																															              <span>Use mock data</span>
+																																																																              </label>
+																																																																	            </div>
+																																																																		        </section>
+
+																																																																			    <section class="overview row">
+																																																																				          <div class="card stat">
+																																																																						          <div class="stat-title">Total Trips</div>
+																																																																							          <div id="totalTrips" class="stat-value">—</div>
+																																																																								        </div>
+																																																																									      <div class="card stat">
+																																																																										              <div class="stat-title">Avg Fare</div>
+																																																																											              <div id="avgFare" class="stat-value">—</div>
+																																																																												            </div>
+																																																																													          <div class="card stat">
+																																																																															          <div class="stat-title">Avg Speed (km/h)</div>
+																																																																																          <div id="avgSpeed" class="stat-value">—</div>
+																																																																																	        </div>
+																																																																																		      <div class="card stat">
+																																																																																			              <div class="stat-title">Avg Tip %</div>
+																																																																																				              <div id="avgTipPct" class="stat-value">—</div>
+																																																																																					            </div>
+																																																																																						        </section>
+
+																																																																																							    <section class="charts row">
+																																																																																								          <div class="card chart-card">
+																																																																																										          <h4>Trips over Time</h4>
+																																																																																											          <canvas id="timeChart"></canvas>
+																																																																																												        </div>
+																																																																																													      <div class="card chart-card">
+																																																																																														              <h4>Distance Distribution</h4>
+																																																																																															              <canvas id="distanceChart"></canvas>
+																																																																																																            </div>
+																																																																																																	        </section>
+
+																																																																																																		    <section class="row">
+																																																																																																			          <div class="card wide">
+																																																																																																					          <h4>Top Pickup Zones</h4>
+																																																																																																						          <canvas id="zonesChart"></canvas>
+																																																																																																							        </div>
+																																																																																																								    </section>
+
+																																																																																																								        <section class="data-table card">
+																																																																																																										      <h4>Trip Records</h4>
+																																																																																																										            <div class="table-wrap">
+																																																																																																												            <table id="tripsTable">
+																																																																																																														              <thead>
+																																																																																																																                  <tr>
+																																																																																																																			                <th>Pickup</th>
+																																																																																																																					              <th>Dropoff</th>
+																																																																																																																						                    <th>Distance (km)</th>
+																																																																																																																								                  <th>Duration (min)</th>
+																																																																																																																										                <th>Fare</th>
+																																																																																																																												              <th>Tip %</th>
+																																																																																																																													                  </tr>
+																																																																																																																															            </thead>
+																																																																																																																																              <tbody></tbody>
+																																																																																																																																	              </table>
+																																																																																																																																		            </div>
+																																																																																																																																			          <div class="table-footer">
+																																																																																																																																					          <button id="prevPage" class="btn">Prev</button>
+																																																																																																																																						          <span id="pageInfo">1</span>
+																																																																																																																																							          <button id="nextPage" class="btn">Next</button>
+																																																																																																																																								        </div>
+																																																																																																																																									    </section>
+
+																																																																																																																																									        <footer class="footer">
+																																																																																																																																											      <small>UrbanMobility dashboard • Built for NYC Taxi Trip assignment</small>
+																																																																																																																																											          </footer>
+																																																																																																																																												    </main>
+
+																																																																																																																																												      <script src="script.js" type="module"></script>
+	</body>
 </html>
