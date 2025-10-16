@@ -5,18 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>UrbanMobility Dashboard</title>
 
-  <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Feather Icons -->
   <script src="https://unpkg.com/feather-icons"></script>
 
-  <!-- External Stylesheet -->
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <!-- Header -->
   <header class="topbar">
     <div class="brand">UrbanMobility</div>
     <nav class="nav">
@@ -24,10 +20,8 @@
     </nav>
   </header>
 
-  <!-- Main Container -->
   <main class="container">
     
-    <!-- Filter Section -->
     <section class="controls card">
       <h3>Filters</h3>
       <div class="filters">
@@ -43,7 +37,6 @@
           Hour
           <select id="hourFilter">
             <option value="">All</option>
-            <!-- JS will fill 0–23 -->
           </select>
         </label>
         <label>
@@ -74,7 +67,6 @@
       </div>
     </section>
 
-    <!-- Overview Stats -->
     <section class="overview row">
       <div class="card stat">
         <div class="stat-title">Total Trips</div>
@@ -94,7 +86,6 @@
       </div>
     </section>
 
-    <!-- Charts -->
     <section class="charts row">
       <div class="card chart-card">
         <h4>Trips over Time</h4>
@@ -106,7 +97,6 @@
       </div>
     </section>
 
-    <!-- Zones Chart -->
     <section class="row">
       <div class="card wide">
         <h4>Top Pickup Zones</h4>
@@ -114,7 +104,6 @@
       </div>
     </section>
 
-    <!-- Data Table -->
     <section class="data-table card">
       <h4>Trip Records</h4>
       <div class="table-wrap">
@@ -139,14 +128,12 @@
         <button id="nextPage" class="btn">Next</button>
       </div>
     </section>
-
-    <!-- Footer -->
+    
     <footer class="footer">
       <small>UrbanMobility Dashboard • Built for NYC Taxi Trip assignment</small>
     </footer>
   </main>
 
-  <!-- Link JS file (must be at the bottom) -->
   <script src="script.js"></script>
 </body>
 </html>
