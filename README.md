@@ -185,6 +185,6 @@ Video walkthrough:
 ## Contributors
 - [Davy Mugire](https://github.com/davy-mgr)
 - [Nazira Umucyo](https://github.com/Nazira-umucyo)
-- [Queen Linda](https://github.com/Queenlinda12)
+- [Queen Sheja Linda](https://github.com/Queenlinda12)
 - [UWENAYO Alain Pacifique](https://github.com/uwenayoallain)
-- [Allan](https://github.com/0Allan1)
+- [Allan Tumusime](https://github.com/0Allan1)
