@@ -5,10 +5,6 @@ import path from "path";
 
 const router = express.Router();
 
-/**
- * DELETE /api/data/clear
- * Clear all data from the database
- */
 router.delete("/data/clear", (req, res, next) => {
 	try {
 		const deletedCount = Trip.deleteAll();
@@ -24,10 +20,6 @@ router.delete("/data/clear", (req, res, next) => {
 	}
 });
 
-/**
- * POST /api/data/load
- * Trigger data cleaning and loading into database
- */
 router.post("/data/load", async (req, res, next) => {
 	try {
 		const inputPath = process.env.DATA_RAW_PATH || path.resolve("src/data/raw/train.csv");
@@ -45,20 +37,6 @@ router.post("/data/load", async (req, res, next) => {
 	}
 });
 
-/**
- * GET /api/trips
- * List trips with pagination, filtering, and sorting
- * Query params:
- *   - page (default: 1)
- *   - limit (default: 100, max: 1000)
- *   - sortBy (default: pickup_datetime)
- *   - sortOrder (ASC/DESC, default: DESC)
- *   - minDuration, maxDuration (seconds)
- *   - minDistance, maxDistance (km)
- *   - pickupHour (0-23)
- *   - minPassengers
- *   - startDate, endDate (ISO format)
- */
 router.get("/trips", (req, res, next) => {
 	try {
 		const page = parseInt(req.query.page) || 1;
@@ -78,7 +56,6 @@ router.get("/trips", (req, res, next) => {
 			endDate: req.query.endDate,
 		};
 
-		// Remove undefined filters
 		Object.keys(filters).forEach((key) => filters[key] === undefined && delete filters[key]);
 
 		const trips = Trip.findAll({ filters, page, limit, sortBy, sortOrder });
@@ -99,10 +76,6 @@ router.get("/trips", (req, res, next) => {
 	}
 });
 
-/**
- * GET /api/trips/:id
- * Get single trip by ID
- */
 router.get("/trips/:id", (req, res, next) => {
 	try {
 		const trip = Trip.findById(req.params.id);
@@ -117,11 +90,6 @@ router.get("/trips/:id", (req, res, next) => {
 	}
 });
 
-/**
- * GET /api/stats
- * Get aggregate statistics
- * Supports same filters as /api/trips
- */
 router.get("/stats", (req, res, next) => {
 	try {
 		const filters = {
@@ -136,7 +104,6 @@ router.get("/stats", (req, res, next) => {
 			endDate: req.query.endDate,
 		};
 
-		// Remove undefined filters
 		Object.keys(filters).forEach((key) => filters[key] === undefined && delete filters[key]);
 
 		const stats = Trip.getStats(filters);
@@ -152,12 +119,6 @@ router.get("/stats", (req, res, next) => {
 	}
 });
 
-/**
- * GET /api/stats/duration-distribution
- * Get trip duration histogram
- * Query params: bucketSize (default: 300 seconds = 5 minutes)
- * Supports same filters as /api/trips
- */
 router.get("/stats/duration-distribution", (req, res, next) => {
 	try {
 		const filters = {
@@ -172,7 +133,6 @@ router.get("/stats/duration-distribution", (req, res, next) => {
 			endDate: req.query.endDate,
 		};
 
-		// Remove undefined filters
 		Object.keys(filters).forEach((key) => filters[key] === undefined && delete filters[key]);
 
 		const bucketSize = parseInt(req.query.bucketSize) || 300;
@@ -188,12 +148,6 @@ router.get("/stats/duration-distribution", (req, res, next) => {
 	}
 });
 
-/**
- * GET /api/stats/distance-distribution
- * Get trip distance histogram
- * Query params: bucketSize (default: 2 km)
- * Supports same filters as /api/trips
- */
 router.get("/stats/distance-distribution", (req, res, next) => {
 	try {
 		const filters = {
@@ -208,7 +162,6 @@ router.get("/stats/distance-distribution", (req, res, next) => {
 			endDate: req.query.endDate,
 		};
 
-		// Remove undefined filters
 		Object.keys(filters).forEach((key) => filters[key] === undefined && delete filters[key]);
 
 		const bucketSize = parseFloat(req.query.bucketSize) || 2;
@@ -224,12 +177,6 @@ router.get("/stats/distance-distribution", (req, res, next) => {
 	}
 });
 
-/**
- * GET /api/stats/speed-distribution
- * Get average speed histogram
- * Query params: bucketSize (default: 5 km/h)
- * Supports same filters as /api/trips
- */
 router.get("/stats/speed-distribution", (req, res, next) => {
 	try {
 		const filters = {
@@ -244,7 +191,6 @@ router.get("/stats/speed-distribution", (req, res, next) => {
 			endDate: req.query.endDate,
 		};
 
-		// Remove undefined filters
 		Object.keys(filters).forEach((key) => filters[key] === undefined && delete filters[key]);
 
 		const bucketSize = parseFloat(req.query.bucketSize) || 5;
