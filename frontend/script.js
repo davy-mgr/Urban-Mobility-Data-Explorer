@@ -41,10 +41,10 @@ function updateTable(data) {
     tr.innerHTML = `
       <td>${trip.pickup}</td>
       <td>${trip.dropoff}</td>
-      <td>${trip.distance}</td>
-      <td>${trip.duration}</td>
-      <td>${trip.fare}</td>
-      <td>${trip.tipPct}</td>
+      <td>${trip.distance.toFixed(2)}</td>
+      <td>${trip.duration.toFixed(1)}</td>
+      <td>$${trip.fare.toFixed(2)}</td>
+      <td>${trip.tipPct.toFixed(1)}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -52,6 +52,10 @@ function updateTable(data) {
 }
 
 function updateCharts(data) {
+  const styles = getComputedStyle(document.documentElement);
+  const colorPrimary = styles.getPropertyValue('--primary').trim() || '#2563eb';
+  const colorAccent = styles.getPropertyValue('--accent').trim() || '#14b8a6';
+  const colorGrid = 'rgba(2,6,23,0.06)';
   const tripsByHour = Array(24).fill(0);
   data.forEach(d => tripsByHour[d.hour]++);
   const ctxTime = document.getElementById("timeChart").getContext("2d");
@@ -60,9 +64,24 @@ function updateCharts(data) {
     type: "line",
     data: {
       labels: Array.from({ length: 24 }, (_, i) => i),
-      datasets: [{ label: "Trips", data: tripsByHour, borderColor: "blue", tension: 0.3 }]
+      datasets: [{
+        label: "Trips",
+        data: tripsByHour,
+        borderColor: colorPrimary,
+        backgroundColor: colorPrimary,
+        pointRadius: 2,
+        tension: 0.35,
+        fill: false
+      }]
     },
-    options: { responsive: true }
+    options: {
+      responsive: true,
+      scales: {
+        x: { grid: { color: colorGrid } },
+        y: { grid: { color: colorGrid } }
+      },
+      plugins: { legend: { display: false } }
+    }
   });
   
   const distanceBins = Array(20).fill(0);
@@ -76,9 +95,22 @@ function updateCharts(data) {
     type: "bar",
     data: {
       labels: Array.from({ length: 20 }, (_, i) => i + " km"),
-      datasets: [{ label: "Trips", data: distanceBins, backgroundColor: "green" }]
+      datasets: [{
+        label: "Trips",
+        data: distanceBins,
+        backgroundColor: colorAccent,
+        borderColor: colorAccent,
+        borderWidth: 1
+      }]
     },
-    options: { responsive: true }
+    options: {
+      responsive: true,
+      scales: {
+        x: { grid: { color: colorGrid } },
+        y: { grid: { color: colorGrid } }
+      },
+      plugins: { legend: { display: false } }
+    }
   });
 
   const zonesCount = {};
@@ -90,7 +122,17 @@ function updateCharts(data) {
     type: "pie",
     data: {
       labels: topZones.map(t => t[0]),
-      datasets: [{ label: "Trips", data: topZones.map(t => t[1]), backgroundColor: ["red","blue","green","orange","purple"] }]
+      datasets: [{
+        label: "Trips",
+        data: topZones.map(t => t[1]),
+        backgroundColor: [
+          colorPrimary,
+          '#60a5fa',
+          '#38bdf8',
+          '#22c55e',
+          '#f59e0b'
+        ]
+      }]
     },
     options: { responsive: true }
   });
@@ -105,6 +147,9 @@ document.addEventListener("DOMContentLoaded", () => {
     hourSelect.appendChild(option);
   }
 
+  if (window.feather && typeof window.feather.replace === 'function') {
+    window.feather.replace();
+  }
   updateStats(mockTrips);
   updateTable(mockTrips);
   updateCharts(mockTrips);
@@ -148,7 +193,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateStats(mockTrips);
     updateTable(mockTrips);
     updateCharts(mockTrips);
-    alert("Data refreshed!");
   });
 
   document.getElementById("prevPage").addEventListener("click", () => {
@@ -161,3 +205,5 @@ document.addEventListener("DOMContentLoaded", () => {
     updateTable(mockTrips);
   });
 });
+
+updateStats(mockTrips);
