@@ -1,6 +1,3 @@
-// ------------------------
-// Mock Data
-// ------------------------
 const mockTrips = [];
 for (let i = 0; i < 100; i++) {
   const distance = parseFloat((Math.random() * 20 + 0.5).toFixed(2));
@@ -13,16 +10,11 @@ for (let i = 0; i < 100; i++) {
   mockTrips.push({ pickup, dropoff, distance, fare, tipPct, duration, hour });
 }
 
-// Pagination
 let currentPage = 1;
 const rowsPerPage = 10;
 
-// Chart instances
 let timeChart, distanceChart, zonesChart;
 
-// ------------------------
-// Helper Functions
-// ------------------------
 function paginate(data, page, rows) {
   const start = (page - 1) * rows;
   return data.slice(start, start + rows);
@@ -60,7 +52,6 @@ function updateTable(data) {
 }
 
 function updateCharts(data) {
-  // Trips over time
   const tripsByHour = Array(24).fill(0);
   data.forEach(d => tripsByHour[d.hour]++);
   const ctxTime = document.getElementById("timeChart").getContext("2d");
@@ -73,8 +64,7 @@ function updateCharts(data) {
     },
     options: { responsive: true }
   });
-
-  // Distance distribution
+  
   const distanceBins = Array(20).fill(0);
   data.forEach(d => {
     const idx = Math.min(Math.floor(d.distance), 19);
@@ -91,7 +81,6 @@ function updateCharts(data) {
     options: { responsive: true }
   });
 
-  // Top pickup zones
   const zonesCount = {};
   data.forEach(d => zonesCount[d.pickup] = (zonesCount[d.pickup] || 0) + 1);
   const topZones = Object.entries(zonesCount).sort((a, b) => b[1] - a[1]).slice(0, 5);
@@ -107,11 +96,7 @@ function updateCharts(data) {
   });
 }
 
-// ------------------------
-// Initialize
-// ------------------------
 document.addEventListener("DOMContentLoaded", () => {
-  // Populate hour filter
   const hourSelect = document.getElementById("hourFilter");
   for (let i = 0; i < 24; i++) {
     const option = document.createElement("option");
@@ -120,14 +105,10 @@ document.addEventListener("DOMContentLoaded", () => {
     hourSelect.appendChild(option);
   }
 
-  // Initial render
   updateStats(mockTrips);
   updateTable(mockTrips);
   updateCharts(mockTrips);
 
-  // ------------------------
-  // Buttons
-  // ------------------------
   document.getElementById("applyFilters").addEventListener("click", () => {
     let filtered = [...mockTrips];
     const start = document.getElementById("startDate").value;
