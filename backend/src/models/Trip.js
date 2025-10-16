@@ -1,6 +1,14 @@
 import { getDatabase } from "../config/db.js";
 
+/**
+ * Trip Model - Database queries for NYC taxi trip data
+ */
 
+/**
+ * Build WHERE clause from filters
+ * @param {object} filters - Filter parameters
+ * @returns {object} {where: string, params: array}
+ */
 function buildWhereClause(filters) {
 	const conditions = [];
 	const params = [];
@@ -46,12 +54,18 @@ function buildWhereClause(filters) {
 	return { where, params };
 }
 
+/**
+ * Find all trips with pagination and filters
+ * @param {object} options - {filters, page, limit, sortBy, sortOrder}
+ * @returns {array} Array of trip records
+ */
 export function findAll(options = {}) {
 	const db = getDatabase();
 	const { filters = {}, page = 1, limit = 100, sortBy = "pickup_datetime", sortOrder = "DESC" } = options;
 
 	const { where, params } = buildWhereClause(filters);
 
+	// Validate sort parameters
 	const validSortFields = ["pickup_datetime", "trip_duration", "trip_distance_km", "avg_speed_kph", "passenger_count"];
 	const validSortOrders = ["ASC", "DESC"];
 
@@ -73,12 +87,22 @@ export function findAll(options = {}) {
 	return trips;
 }
 
+/**
+ * Find single trip by ID
+ * @param {string} id - Trip ID
+ * @returns {object|null} Trip record or null
+ */
 export function findById(id) {
 	const db = getDatabase();
 	const stmt = db.prepare("SELECT * FROM trips WHERE id = ?");
 	return stmt.get(id);
 }
 
+/**
+ * Count trips matching filters
+ * @param {object} filters - Filter parameters
+ * @returns {number} Count of matching trips
+ */
 export function count(filters = {}) {
 	const db = getDatabase();
 	const { where, params } = buildWhereClause(filters);
@@ -90,7 +114,11 @@ export function count(filters = {}) {
 	return result.count;
 }
 
-
+/**
+ * Get aggregate statistics
+ * @param {object} filters - Filter parameters
+ * @returns {object} Statistics object
+ */
 export function getStats(filters = {}) {
 	const db = getDatabase();
 	const { where, params } = buildWhereClause(filters);
@@ -116,6 +144,11 @@ export function getStats(filters = {}) {
 	return stmt.get(...params);
 }
 
+/**
+ * Get trip distribution by hour
+ * @param {object} filters - Filter parameters
+ * @returns {array} Array of {pickup_hour, count}
+ */
 export function getHourlyDistribution(filters = {}) {
 	const db = getDatabase();
 	const { where, params } = buildWhereClause(filters);
@@ -132,6 +165,12 @@ export function getHourlyDistribution(filters = {}) {
 	return stmt.all(...params);
 }
 
+/**
+ * Get trip duration distribution (histogram)
+ * @param {object} filters - Filter parameters
+ * @param {number} bucketSize - Bucket size in seconds (default: 300 = 5 minutes)
+ * @returns {array} Array of {bucket, count, bucket_min}
+ */
 export function getDurationDistribution(filters = {}, bucketSize = 300) {
 	const db = getDatabase();
 	const { where, params } = buildWhereClause(filters);
@@ -151,6 +190,12 @@ export function getDurationDistribution(filters = {}, bucketSize = 300) {
 	return stmt.all(bucketSize, bucketSize, bucketSize, bucketSize, ...params);
 }
 
+/**
+ * Get trip distance distribution (histogram)
+ * @param {object} filters - Filter parameters
+ * @param {number} bucketSize - Bucket size in km (default: 2)
+ * @returns {array} Array of {bucket, count, bucket_min}
+ */
 export function getDistanceDistribution(filters = {}, bucketSize = 2) {
 	const db = getDatabase();
 	const { where, params } = buildWhereClause(filters);
@@ -170,10 +215,17 @@ export function getDistanceDistribution(filters = {}, bucketSize = 2) {
 	return stmt.all(bucketSize, bucketSize, bucketSize, bucketSize, ...params);
 }
 
+/**
+ * Get average speed distribution (histogram)
+ * @param {object} filters - Filter parameters
+ * @param {number} bucketSize - Bucket size in km/h (default: 5)
+ * @returns {array} Array of {bucket, count, bucket_min}
+ */
 export function getSpeedDistribution(filters = {}, bucketSize = 5) {
 	const db = getDatabase();
 	const { where, params } = buildWhereClause(filters);
 
+	// Add WHERE clause for non-null speeds or append to existing WHERE
 	const whereClause = where
 		? `${where} AND avg_speed_kph IS NOT NULL`
 		: 'WHERE avg_speed_kph IS NOT NULL';
@@ -193,6 +245,10 @@ export function getSpeedDistribution(filters = {}, bucketSize = 5) {
 	return stmt.all(bucketSize, bucketSize, bucketSize, bucketSize, ...params);
 }
 
+/**
+ * Delete all trips from database
+ * @returns {number} Number of deleted records
+ */
 export function deleteAll() {
 	const db = getDatabase();
 	const stmt = db.prepare("DELETE FROM trips");
