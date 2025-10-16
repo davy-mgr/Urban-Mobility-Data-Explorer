@@ -3,7 +3,7 @@ import { cleanData } from "../processing/cleanData.js";
 import { getDatabase } from "../config/db.js";
 import logger from "../utils/logger.js";
 
-const BATCH_SIZE = 1000; // Insert 1000 records per transaction
+const BATCH_SIZE = 1000; 
 
 /**
  * Load cleaned data into database with batch inserts
@@ -17,7 +17,6 @@ export async function loadDataToDatabase(inputPath) {
 
 	console.log(chalk.cyan("📦 Preparing database for bulk insert..."));
 
-	// Prepare insert statement (reuse for performance)
 	const insertStmt = db.prepare(`
 		INSERT OR REPLACE INTO trips (
 			id, pickup_datetime, dropoff_datetime,
@@ -28,7 +27,6 @@ export async function loadDataToDatabase(inputPath) {
 		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`);
 
-	// Create transaction wrapper for batch inserts
 	const insertBatch = db.transaction((records) => {
 		for (const record of records) {
 			insertStmt.run(
@@ -48,7 +46,6 @@ export async function loadDataToDatabase(inputPath) {
 		}
 	});
 
-	// Callback for each valid record
 	const handleValidRecord = (record) => {
 		batch.push(record);
 
@@ -60,10 +57,8 @@ export async function loadDataToDatabase(inputPath) {
 		}
 	};
 
-	// Stream and clean data
 	const result = await cleanData(inputPath, handleValidRecord);
 
-	// Insert remaining records
 	if (batch.length > 0) {
 		insertBatch(batch);
 		inserted += batch.length;
