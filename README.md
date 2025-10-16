@@ -12,7 +12,7 @@ unzip nyc-taxi-trip-duration.zip -d backend/src/data/raw/
 ## Quick Start
 
 ```bash
-git clone git@github.com:davy-mgr/Urban-Mobility-Data-Explorer.git
+git clone https://github.com/davy-mgr/Urban-Mobility-Data-Explorer.git
 cd Urban-Mobility-Data-Explorer
 
 # Build services
