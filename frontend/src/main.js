@@ -9,7 +9,7 @@ const app = document.querySelector('#app');
 app.innerHTML = `
   <div class="dashboard">
     <header class="dashboard-header">
-      <h1>NYC Taxi Trip Explorer</h1>
+      <h1>Urban Mobility Data Explorer</h1>
     </header>
 
     <div id="filters-section"></div>

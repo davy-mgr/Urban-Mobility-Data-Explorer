@@ -1,51 +1,72 @@
-import Database from "better-sqlite3";
-import fs from "fs-extra";
-import path from "path";
-import { fileURLToPath } from "url";
+CREATE TABLE IF NOT EXISTS trips (
+    id TEXT PRIMARY KEY,
+    pickup_datetime TEXT NOT NULL,
+    dropoff_datetime TEXT NOT NULL,
+    pickup_latitude REAL NOT NULL,
+    pickup_longitude REAL NOT NULL,
+    dropoff_latitude REAL NOT NULL,
+    dropoff_longitude REAL NOT NULL,
+    passenger_count INTEGER NOT NULL,
+    trip_duration INTEGER NOT NULL,
+    trip_distance_km REAL NOT NULL,
+    avg_speed_kph REAL,
+    pickup_hour INTEGER NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+CREATE INDEX IF NOT EXISTS idx_pickup_datetime ON trips (pickup_datetime);
 
-let db = null;
+CREATE INDEX IF NOT EXISTS idx_trip_duration ON trips (trip_duration);
 
-export function getDatabase() {
-  if (db) return db;
+CREATE INDEX IF NOT EXISTS idx_trip_distance ON trips (trip_distance_km);
 
-  const dbPath = process.env.DB_PATH || path.resolve(__dirname, "../../data/trips.db");
-  const schemaPath = path.resolve(process.cwd(), "database/schema.sql");
+CREATE INDEX IF NOT EXISTS idx_pickup_hour ON trips (pickup_hour);
 
-  fs.ensureDirSync(path.dirname(dbPath));
+CREATE INDEX IF NOT EXISTS idx_passenger_count ON trips (passenger_count);
 
-  db = new Database(dbPath);
-  db.pragma("journal_mode = WAL");
-  db.pragma("synchronous = NORMAL");
-  db.pragma("cache_size = -64000");
-  db.pragma("temp_store = MEMORY");
-  db.pragma("mmap_size = 30000000000");
-  db.pragma("page_size = 4096");
-  db.pragma("optimize");
+CREATE INDEX IF NOT EXISTS idx_pickup_coords ON trips (
+    pickup_latitude,
+    pickup_longitude
+);
 
-  if (fs.existsSync(schemaPath)) {
-    const schema = fs.readFileSync(schemaPath, "utf-8");
-    db.exec(schema);
-    console.log("✅ Database schema initialized from:", schemaPath);
-  } else {
-    console.warn("⚠️  Schema file not found:", schemaPath);
-  }
+CREATE INDEX IF NOT EXISTS idx_passenger_datetime ON trips (
+    passenger_count,
+    pickup_datetime
+);
 
-  return db;
-}
+CREATE INDEX IF NOT EXISTS idx_passenger_hour ON trips (passenger_count, pickup_hour);
 
-export function closeDatabase() {
-  if (db) {
-    db.close();
-    db = null;
-  }
-}
+CREATE INDEX IF NOT EXISTS idx_passenger_stats ON trips (
+    passenger_count,
+    trip_duration,
+    trip_distance_km,
+    avg_speed_kph
+);
 
-process.on("SIGINT", () => {
-  closeDatabase();
-  process.exit(0);
-});
+CREATE INDEX IF NOT EXISTS idx_passenger_duration_covering ON trips (
+    passenger_count,
+    trip_duration
+);
 
-export default { getDatabase, closeDatabase };
+CREATE INDEX IF NOT EXISTS idx_passenger_distance_covering ON trips (
+    passenger_count,
+    trip_distance_km
+);
+
+CREATE INDEX IF NOT EXISTS idx_passenger_speed ON trips (
+    passenger_count,
+    avg_speed_kph
+)
+WHERE
+    avg_speed_kph IS NOT NULL;
+
+CREATE VIEW IF NOT EXISTS trip_stats AS
+SELECT
+    COUNT(*) as total_trips,
+    AVG(trip_duration) as avg_duration_sec,
+    AVG(trip_distance_km) as avg_distance_km,
+    AVG(avg_speed_kph) as avg_speed_kph,
+    AVG(passenger_count) as avg_passengers,
+    MIN(pickup_datetime) as earliest_trip,
+    MAX(pickup_datetime) as latest_trip
+FROM trips;

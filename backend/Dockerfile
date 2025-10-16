@@ -2,15 +2,12 @@ FROM node:20-slim
 
 WORKDIR /app
 
-COPY backend/package*.json ./backend/
-RUN npm install --prefix ./backend
+COPY package*.json ./
 
-COPY backend ./backend
+RUN npm install
 
-COPY database ./database
-
-RUN mkdir -p ./backend/src/data
+COPY . .
 
 EXPOSE 3001
 
-CMD ["npm", "run", "dev", "--prefix", "./backend"]
+CMD ["npm", "run", "dev"]
