@@ -123,13 +123,11 @@ export function createFilters(container, onFilterChange) {
     onFilterChange(currentFilters);
   });
 
-  // Collapsible behavior: filters start collapsed by default
   toggleButton.addEventListener('click', () => {
     const expanded = toggleButton.getAttribute('aria-expanded') === 'true';
     const next = !expanded;
     toggleButton.setAttribute('aria-expanded', String(next));
     contentEl.hidden = !next;
-    // Update button text
     toggleButton.innerHTML = `${next ? 'Hide Filters' : 'Show Filters'} <span class="chevron"></span>`;
   });
 
