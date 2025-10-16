@@ -248,7 +248,6 @@ export function createCharts(container) {
     update: (statsData, distributionData) => {
       const totalTrips = statsData?.stats?.total_trips || 0;
 
-      // Update hourly distribution chart
       if (statsData && statsData.hourlyDistribution) {
         const hourlyDist = statsData.hourlyDistribution;
         if (hourlyDist.length > 0) {
@@ -256,7 +255,6 @@ export function createCharts(container) {
           hourlyChart.data.datasets[0].data = hourlyDist.map(h => h.count);
           hourlySubtitle.textContent = `${totalTrips.toLocaleString()} trips included`;
         } else {
-          // Clear chart data when no results
           hourlyChart.data.labels = [];
           hourlyChart.data.datasets[0].data = [];
           hourlySubtitle.textContent = totalTrips === 0 ? 'No data for selected filters' : 'Loading...';
@@ -264,7 +262,6 @@ export function createCharts(container) {
       }
       hourlyChart.update();
 
-      // Update duration distribution chart
       if (distributionData?.duration?.distribution && Array.isArray(distributionData.duration.distribution)) {
         const durationData = formatDurationDistribution(
           distributionData.duration.distribution,
@@ -276,7 +273,6 @@ export function createCharts(container) {
           const durationTotal = durationData.data.reduce((sum, count) => sum + count, 0);
           durationSubtitle.textContent = `${durationTotal.toLocaleString()} trips`;
         } else {
-          // Clear chart data when no results
           durationChart.data.labels = [];
           durationChart.data.datasets[0].data = [];
           durationSubtitle.textContent = totalTrips === 0 ? 'No data for selected filters' : 'Loading...';
@@ -284,7 +280,6 @@ export function createCharts(container) {
       }
       durationChart.update();
 
-      // Update distance distribution chart
       if (distributionData?.distance?.distribution && Array.isArray(distributionData.distance.distribution)) {
         const distanceData = formatDistanceDistribution(
           distributionData.distance.distribution,
@@ -296,7 +291,6 @@ export function createCharts(container) {
           const distanceTotal = distanceData.data.reduce((sum, count) => sum + count, 0);
           distanceSubtitle.textContent = `${distanceTotal.toLocaleString()} trips`;
         } else {
-          // Clear chart data when no results
           distanceChart.data.labels = [];
           distanceChart.data.datasets[0].data = [];
           distanceSubtitle.textContent = totalTrips === 0 ? 'No data for selected filters' : 'Loading...';
@@ -304,7 +298,6 @@ export function createCharts(container) {
       }
       distanceChart.update();
 
-      // Update speed distribution chart
       if (distributionData?.speed?.distribution && Array.isArray(distributionData.speed.distribution)) {
         const speedData = formatSpeedDistribution(
           distributionData.speed.distribution,
@@ -316,7 +309,6 @@ export function createCharts(container) {
           const speedTotal = speedData.data.reduce((sum, count) => sum + count, 0);
           speedSubtitle.textContent = `${speedTotal.toLocaleString()} trips`;
         } else {
-          // Clear chart data when no results
           speedChart.data.labels = [];
           speedChart.data.datasets[0].data = [];
           speedSubtitle.textContent = totalTrips === 0 ? 'No data for selected filters' : 'Loading...';
