@@ -55,10 +55,8 @@ export function createStats(container) {
       const avgSpeedEl = container.querySelector('#avgSpeed');
       const avgPassengersEl = container.querySelector('#avgPassengers');
 
-      // Handle total trips (could be 0 or null/undefined)
       totalTripsEl.textContent = stats.total_trips != null ? formatNumber(stats.total_trips) : '0';
 
-      // Handle averages (null/undefined when no data)
       avgDurationEl.textContent = stats.avg_duration_sec != null ? formatDuration(stats.avg_duration_sec) : '-';
       avgDistanceEl.textContent = stats.avg_distance_km != null ? formatDistance(stats.avg_distance_km) : '-';
       avgSpeedEl.textContent = stats.avg_speed_kph != null ? formatSpeed(stats.avg_speed_kph) : '-';
