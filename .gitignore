@@ -4,6 +4,7 @@
 /backend/data/trips.db
 /backend/data/trips.db-shm
 /backend/data/trips.db-wal
+.vite/
 
 /backend/.env
 .env
