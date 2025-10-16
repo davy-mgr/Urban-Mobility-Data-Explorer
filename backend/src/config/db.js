@@ -14,26 +14,20 @@ export function getDatabase() {
 	const dbPath = process.env.DB_PATH || path.resolve(__dirname, "../../data/trips.db");
 	const schemaPath = path.resolve(__dirname, "../../../database/schema.sql");
 
-	// Ensure data directory exists
 	fs.ensureDirSync(path.dirname(dbPath));
 
-	// Initialize database connection
 	db = new Database(dbPath);
 
-	// Enable WAL mode for better concurrency
 	db.pragma("journal_mode = WAL");
 
-	// Performance optimizations
-	db.pragma("synchronous = NORMAL"); // Faster writes, still safe with WAL
-	db.pragma("cache_size = -64000"); // 64MB cache (negative = KB)
-	db.pragma("temp_store = MEMORY"); // Store temp tables in memory
-	db.pragma("mmap_size = 30000000000"); // 30GB memory-mapped I/O
-	db.pragma("page_size = 4096"); // Optimal page size
-
-	// Analyze database for query optimization (run on startup)
+	db.pragma("synchronous = NORMAL"); 
+	db.pragma("cache_size = -64000");
+	db.pragma("temp_store = MEMORY");
+	db.pragma("mmap_size = 30000000000");
+	db.pragma("page_size = 4096"); 
+	
 	db.pragma("optimize");
 
-	// Initialize schema if not exists
 	if (fs.existsSync(schemaPath)) {
 		const schema = fs.readFileSync(schemaPath, "utf-8");
 		db.exec(schema);
@@ -50,7 +44,6 @@ export function closeDatabase() {
 	}
 }
 
-// Graceful shutdown
 process.on("SIGINT", () => {
 	closeDatabase();
 	process.exit(0);
