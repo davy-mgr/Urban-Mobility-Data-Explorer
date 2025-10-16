@@ -183,8 +183,8 @@ Video walkthrough:
   - Trip model queries: `backend/src/models/Trip.js`.
   - Schema and indexes: `database/schema.sql`.
 ## Contributors
--[Davy Mugire](https://github.com/davy-mgr)
--[Nazira Umucyo](https://github.com/Nazira-umucyo)
--[Queen Linda](https://github.com/Queenlinda12)
--[UWENAYO Alain Pacifique](https://github.com/uwenayoallain)
--[Allan](https://github.com/0Allan1)
+- [Davy Mugire](https://github.com/davy-mgr)
+- [Nazira Umucyo](https://github.com/Nazira-umucyo)
+- [Queen Linda](https://github.com/Queenlinda12)
+- [UWENAYO Alain Pacifique](https://github.com/uwenayoallain)
+- [Allan](https://github.com/0Allan1)
