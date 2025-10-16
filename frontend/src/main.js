@@ -36,7 +36,6 @@ const errorEl = document.querySelector('#error');
 let statsComponent;
 let chartsComponent;
 
-// Debounce utility function
 function debounce(func, wait) {
   let timeout;
   return function executedFunction(...args) {
@@ -55,13 +54,10 @@ async function loadData(filters = {}) {
   try {
     errorEl.classList.add('hidden');
 
-    // Only show loading indicator if request takes longer than 200ms
-    // This prevents flicker on fast responses
     loadingTimeout = setTimeout(() => {
       loadingEl.classList.remove('hidden');
     }, 200);
 
-    // Fetch stats and all distribution data in parallel
     const [statsData, durationDist, distanceDist, speedDist] = await Promise.all([
       fetchStats(filters),
       fetchDurationDistribution(filters, 300),
@@ -69,7 +65,6 @@ async function loadData(filters = {}) {
       fetchSpeedDistribution(filters, 5)
     ]);
 
-    // Clear the timeout since we got a response
     clearTimeout(loadingTimeout);
 
     console.log('Loaded data:', { statsData, durationDist, distanceDist, speedDist });
@@ -83,7 +78,6 @@ async function loadData(filters = {}) {
       chartsComponent = createCharts(chartsSection);
     }
 
-    // Package distribution data for charts
     const distributionData = {
       duration: durationDist,
       distance: distanceDist,
@@ -94,7 +88,6 @@ async function loadData(filters = {}) {
 
     loadingEl.classList.add('hidden');
   } catch (error) {
-    // Clear the timeout in case of error
     clearTimeout(loadingTimeout);
 
     console.error('Error loading data:', error);
@@ -105,12 +98,10 @@ async function loadData(filters = {}) {
   }
 }
 
-// Debounced version of loadData (300ms delay)
 const debouncedLoadData = debounce(loadData, 300);
 
 createFilters(filtersSection, (filters) => {
   debouncedLoadData(filters);
 });
 
-// Initial load (no debounce needed)
 loadData();
