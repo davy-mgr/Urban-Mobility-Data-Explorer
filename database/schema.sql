@@ -1,5 +1,3 @@
--- NYC Taxi Trip Database Schema
-
 CREATE TABLE IF NOT EXISTS trips (
     id TEXT PRIMARY KEY,
     pickup_datetime TEXT NOT NULL,
@@ -24,7 +22,6 @@ CREATE INDEX IF NOT EXISTS idx_trip_distance ON trips (trip_distance_km);
 
 CREATE INDEX IF NOT EXISTS idx_pickup_hour ON trips (pickup_hour);
 
--- Speed up equality/range filters by passenger_count
 CREATE INDEX IF NOT EXISTS idx_passenger_count ON trips (passenger_count);
 
 CREATE INDEX IF NOT EXISTS idx_pickup_coords ON trips (
@@ -32,12 +29,10 @@ CREATE INDEX IF NOT EXISTS idx_pickup_coords ON trips (
     pickup_longitude
 );
 
--- Composite indexes for common filter combinations
 CREATE INDEX IF NOT EXISTS idx_passenger_datetime ON trips (passenger_count, pickup_datetime);
 
 CREATE INDEX IF NOT EXISTS idx_passenger_hour ON trips (passenger_count, pickup_hour);
 
--- Covering indexes for aggregate queries (significant performance boost)
 CREATE INDEX IF NOT EXISTS idx_passenger_stats
 ON trips(passenger_count, trip_duration, trip_distance_km, avg_speed_kph);
 
