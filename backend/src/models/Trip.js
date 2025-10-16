@@ -65,7 +65,6 @@ export function findAll(options = {}) {
 
 	const { where, params } = buildWhereClause(filters);
 
-	// Validate sort parameters
 	const validSortFields = ["pickup_datetime", "trip_duration", "trip_distance_km", "avg_speed_kph", "passenger_count"];
 	const validSortOrders = ["ASC", "DESC"];
 
