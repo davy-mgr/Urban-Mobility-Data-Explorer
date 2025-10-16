@@ -48,3 +48,33 @@ curl http://localhost:3001/api/trips
 ## Development
 
 Backend runs on port 3001 with hot reload enabled. Logs show progress every 10k records processed while loading data.
+Data Cleaning: Validates coordinates, trip duration, and passenger count
+
+Feature Engineering: Calculates distance, average speed, and pickup hour
+
+Batch Processing: Streams and loads over 1.4M records efficiently
+
+Interactive Dashboard: Visualizes trends in time, distance, and zones
+
+Filter Options: Filter trips by date, distance, fare, and hour
+
+Mock Mode: Option to use sample data for testing
+
+⚙️ Development Notes
+
+The backend runs on port 3001 with hot reload enabled.
+
+Progress logs show every 10,000 records processed during data loading.
+
+The frontend is served on port 5000 (default in Docker Compose).
+
+All environment variables are managed inside the docker-compose.yml file.
+
+👥 Team Members
+Name	Role	Responsibility
+Member A	Backend Developer	Built API routes and logic
+Member B	Frontend Developer	Implemented charts and UI
+Member C	Database Engineer	Designed and optimized schema
+Member D	DevOps Engineer	Managed Docker and deployment
+Member E	Documentation Lead	Handled reports and README
+
