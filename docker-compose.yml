@@ -4,11 +4,8 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      # Data persistence
       - ./backend/data:/app/data
-      # For development
       - ./backend/src:/app/src
-      # Raw data
       - ./backend/src/data/raw:/app/src/data/raw
     environment:
       - NODE_ENV=development
