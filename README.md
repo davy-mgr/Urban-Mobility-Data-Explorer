@@ -5,6 +5,9 @@ Full‑stack application to explore NYC taxi trip patterns. The backend cleans a
 Frontend: Vite + vanilla JS + Chart.js. 
 Backend: Node.js + Express + better‑sqlite3.
 
+## Walkthrough Video
+[video](https://www.loom.com/share/2c6ebf85da8645c0996fa37dd4801ff8?sid=4dac7480-d183-4d11-b84f-2adb8c43bf67)
+
 ## Prerequisites
 
 - Docker and Docker Compose (recommended), or Node.js 20+ for local dev.
